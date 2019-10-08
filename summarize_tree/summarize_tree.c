@@ -11,8 +11,7 @@ static int num_dirs, num_regular;
 bool is_dir(const char* path) {
   struct stat* fileStat;
   fileStat = malloc(sizeof(struct stat));
-  int fileExists = stat(path, fileStat);
-   
+  int fileExists = stat(path, fileStat); 
   bool isadirectory = (fileExists == 0 && S_ISDIR(fileStat->st_mode));  
   free(fileStat);
   return isadirectory;
@@ -24,24 +23,23 @@ bool is_dir(const char* path) {
  */
 void process_path(const char*);
 
-void process_directory(const char* path) {  
-  
+void process_directory(const char* path) {   
   num_dirs++; 
   DIR *dir = opendir(path);
   
   struct dirent *f;
   f = readdir(dir);
-  
+  chdir(path);
   while(f != NULL){
     char* name = f->d_name;    
    
     if(!(strcmp(name, ".") == 0 || strcmp(name, "..") == 0)){
-      chdir(path);
-      process_path(name);
-      chdir("..");
-    }
+      process_path(name); 
+    } 
     f = readdir(dir);
+  
   }
+  chdir("..");
   closedir(dir);
   free(f);
   
@@ -60,11 +58,11 @@ void process_directory(const char* path) {
 }
 
 void process_file(const char* path) {
+ 
   num_regular++;
 }
 
-void process_path(const char* path) {
-
+void process_path(const char* path) { 
   if (is_dir(path)) {
     process_directory(path);
   } else {
@@ -84,8 +82,8 @@ int main (int argc, char *argv[]) {
   num_dirs = 0;
   num_regular = 0;
 
-  
-  process_path(argv[1]);
+  chdir(argv[1]);  
+  process_path(".");
   printf("There were %d directories.\n", num_dirs);
   printf("There were %d regular files.\n", num_regular);
 
