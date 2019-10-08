@@ -9,11 +9,13 @@
 static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
-  struct stat fileStat;
+  struct stat* fileStat;
   fileStat = malloc(sizeof(struct stat));
-  int fileExists = stat(path, &fileStat);
-  printf("%d", fileExists);
-  return fileExists == 1 && S_ISDIR(fileStat.st_mode);  
+  int fileExists = stat(path, fileStat);
+   
+  bool isadirectory = (fileExists == 0 && S_ISDIR(fileStat->st_mode));  
+  free(fileStat);
+  return isadirectory;
 }
 
 /* 
@@ -22,8 +24,29 @@ bool is_dir(const char* path) {
  */
 void process_path(const char*);
 
-void process_directory(const char* path) {
-  /*
+void process_directory(const char* path) {  
+  
+  num_dirs++; 
+  DIR *dir = opendir(path);
+  
+  struct dirent *f;
+  f = readdir(dir);
+  
+  while(f != NULL){
+    char* name = f->d_name;    
+   
+    if(!(strcmp(name, ".") == 0 || strcmp(name, "..") == 0)){
+      chdir(path);
+      process_path(name);
+      chdir("..");
+    }
+    f = readdir(dir);
+  }
+  closedir(dir);
+  free(f);
+  
+  
+	/*
    * Update the number of directories seen, use opendir() to open the
    * directory, and then use readdir() to loop through the entries
    * and process them. You have to be careful not to process the
@@ -37,17 +60,17 @@ void process_directory(const char* path) {
 }
 
 void process_file(const char* path) {
-  /*
-   * Update the number of regular files.
-   */
+  num_regular++;
 }
 
 void process_path(const char* path) {
+
   if (is_dir(path)) {
     process_directory(path);
   } else {
     process_file(path);
   }
+ 
 }
 
 int main (int argc, char *argv[]) {
@@ -61,8 +84,8 @@ int main (int argc, char *argv[]) {
   num_dirs = 0;
   num_regular = 0;
 
-  //process_path(argv[1]);
-  printf("%d", is_dir(argv[1]));
+  
+  process_path(argv[1]);
   printf("There were %d directories.\n", num_dirs);
   printf("There were %d regular files.\n", num_regular);
 
