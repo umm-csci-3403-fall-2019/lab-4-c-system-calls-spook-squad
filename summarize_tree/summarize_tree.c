@@ -8,6 +8,7 @@
 
 static int num_dirs, num_regular;
 
+//returns true if the file exists and is a directory, false otherwise
 bool is_dir(const char* path) {
   struct stat* fileStat;
   fileStat = malloc(sizeof(struct stat));
@@ -23,6 +24,7 @@ bool is_dir(const char* path) {
  */
 void process_path(const char*);
 
+//Add 1 to num_dirs and call process_path on all files in the directory.
 void process_directory(const char* path) {   
   num_dirs++; 
   DIR *dir = opendir(path);
@@ -56,6 +58,7 @@ void process_directory(const char* path) {
    * done.
    */
 }
+
 
 void process_file(const char* path) {
  

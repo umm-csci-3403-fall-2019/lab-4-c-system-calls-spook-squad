@@ -11,6 +11,7 @@ void disemvowel(FILE* input, FILE* output) {
     size = 100;
     str = (char*) malloc (size + 1);
 
+    //Get the total number of vowels
     while (getline(&str, &size, input) > 0){
     int i;
     int numVowel = 0;
@@ -25,8 +26,10 @@ void disemvowel(FILE* input, FILE* output) {
 		break;
 	}
     }
+    //Make a string to fit all of the non-vowels
     char *newstr = (char*) calloc(strlen(str) - numVowel + 1, sizeof(char));
     int j=0;
+    //add only non-vowels
     for (i=0; i<strlen(str); i++){
         switch(tolower(str[i])){
             case 'a':
@@ -51,7 +54,10 @@ void disemvowel(FILE* input, FILE* output) {
 int main (int argc, char** argv){  
   FILE* in;
   FILE* out;
-
+  //Change the input and output based on given arguments
+  //0: stdin, stdout
+  //1: file input, stdout
+  //2: file input, file output
   if(argc == 1){
     in = stdin;
     out = stdout;
